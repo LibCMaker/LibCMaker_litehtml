@@ -1,8 +1,10 @@
-cmake_minimum_required(VERSION 2.8)
+if(MSVC)
+  cmake_minimum_required(VERSION 3.4)
+else()
+  cmake_minimum_required(VERSION 3.0)
+endif()
 
 project(litehtml CXX)
-include(CTest)
-enable_testing()
 
 add_subdirectory(src/gumbo)
 
@@ -111,6 +113,12 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     PUBLIC_HEADER "${HEADER_LITEHTML}"
 )
 
+if(MSVC AND BUILD_SHARED_LIBS)
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        WINDOWS_EXPORT_ALL_SYMBOLS ON
+    )
+endif()
+
 # Export litehtml includes.
 target_include_directories(${PROJECT_NAME} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
@@ -124,35 +132,44 @@ if (LITEHTML_UTF8)
 endif()
 
 # Gumbo
+find_package(gumbo)
 target_link_libraries(${PROJECT_NAME} PUBLIC gumbo)
 
 # install and export
 install(TARGETS ${PROJECT_NAME}
     EXPORT litehtmlTargets
     ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION lib
     PUBLIC_HEADER DESTINATION include/litehtml
 )
+
 install(FILES cmake/litehtmlConfig.cmake DESTINATION lib/cmake/litehtml)
 install(EXPORT litehtmlTargets FILE litehtmlTargets.cmake DESTINATION lib/cmake/litehtml)
 
 # Binary Master.css
-if (WIN32)
-    find_program(XXD_COMMAND xxd.exe ${CMAKE_CURRENT_SOURCE_DIR}/tool)
-    file(TO_NATIVE_PATH ${XXD_COMMAND} XXD_COMMAND)
-    file(TO_NATIVE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/include/master.css MASTER_FILE)
-    add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/master.css.inc
-        COMMAND type ${MASTER_FILE} | "${XXD_COMMAND}" -i > ${CMAKE_CURRENT_SOURCE_DIR}/src/master.css.inc)
-else()
-    find_program(XXD_COMMAND xxd)
-    add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/master.css.inc
-        COMMAND cat ${CMAKE_CURRENT_SOURCE_DIR}/include/master.css | xxd -i > ${CMAKE_CURRENT_SOURCE_DIR}/src/master.css.inc)
-endif()
-set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/master.css.inc PROPERTIES GENERATED TRUE)
+#if (WIN32)
+#    find_program(XXD_COMMAND xxd.exe ${CMAKE_CURRENT_SOURCE_DIR}/tool)
+#    file(TO_NATIVE_PATH ${XXD_COMMAND} XXD_COMMAND)
+#    file(TO_NATIVE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/include/master.css MASTER_FILE)
+#    add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/master.css.inc
+#        COMMAND type ${MASTER_FILE} | "${XXD_COMMAND}" -i > ${CMAKE_CURRENT_SOURCE_DIR}/src/master.css.inc)
+#else()
+#    find_program(XXD_COMMAND xxd)
+#    add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/master.css.inc
+#        COMMAND cat ${CMAKE_CURRENT_SOURCE_DIR}/include/master.css | xxd -i > ${CMAKE_CURRENT_SOURCE_DIR}/src/master.css.inc)
+#endif()
+#set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/master.css.inc PROPERTIES GENERATED TRUE)
+set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/test/master.css.inc PROPERTIES GENERATED TRUE)
 
 # Tests
 if (BUILD_TESTING)
+    include(CTest)
+    enable_testing()
+
     set(TEST_NAME ${PROJECT_NAME}_tests)
-    add_executable(${TEST_NAME} ${TEST_LITEHTML} ${CMAKE_CURRENT_SOURCE_DIR}/src/master.css.inc)
+#    add_executable(${TEST_NAME} ${TEST_LITEHTML} ${CMAKE_CURRENT_SOURCE_DIR}/src/master.css.inc)
+    add_executable(${TEST_NAME} ${TEST_LITEHTML} ${CMAKE_CURRENT_SOURCE_DIR}/test/master.css.inc)
     set_target_properties(${TEST_NAME} PROPERTIES
         CXX_STANDARD 11
         C_STANDARD 99
