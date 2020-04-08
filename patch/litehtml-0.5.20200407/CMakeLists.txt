@@ -122,6 +122,7 @@ endif()
 # Export litehtml includes.
 target_include_directories(${PROJECT_NAME} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/gumbo/include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include/${PROJECT_NAME}>)
 target_include_directories(${PROJECT_NAME} PRIVATE include/${PROJECT_NAME})
@@ -132,8 +133,7 @@ if (LITEHTML_UTF8)
 endif()
 
 # Gumbo
-find_package(gumbo)
-target_link_libraries(${PROJECT_NAME} PUBLIC gumbo)
+target_link_libraries(${PROJECT_NAME} PRIVATE gumbo)
 
 # install and export
 install(TARGETS ${PROJECT_NAME}

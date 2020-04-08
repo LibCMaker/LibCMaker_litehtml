@@ -30,8 +30,10 @@ if(litehtml_FOUND AND NOT (TARGET litehtml::litehtml))
     IMPORTED_LOCATION "${litehtml_LIBRARY}"
   )
 
-  find_package(gumbo REQUIRED)
-  set_property(TARGET litehtml::litehtml APPEND PROPERTY
-    INTERFACE_LINK_LIBRARIES gumbo::gumbo
-  )
+  if(NOT BUILD_SHARED_LIBS)
+    find_package(gumbo REQUIRED)
+    set_property(TARGET litehtml::litehtml APPEND PROPERTY
+      INTERFACE_LINK_LIBRARIES gumbo::gumbo
+    )
+  endif()
 endif()

@@ -41,7 +41,7 @@ set(HEADER_GUMBO
         include/gumbo/vector.h
 )
 
-add_library(${PROJECT_NAME} ${SOURCE_GUMBO})
+add_library(${PROJECT_NAME} STATIC ${SOURCE_GUMBO})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
     C_STANDARD 99
@@ -63,6 +63,10 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>)
 target_include_directories(${PROJECT_NAME} PRIVATE include/gumbo)
+
+if(BUILD_SHARED_LIBS)
+  set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
+endif()
 
 # install and export
 install(TARGETS ${PROJECT_NAME}
