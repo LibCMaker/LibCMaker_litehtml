@@ -136,12 +136,14 @@ endif()
 target_link_libraries(${PROJECT_NAME} PRIVATE gumbo)
 
 # install and export
+include(GNUInstallDirs)
+
 install(TARGETS ${PROJECT_NAME}
     EXPORT litehtmlTargets
-    ARCHIVE DESTINATION lib
-    LIBRARY DESTINATION lib
-    RUNTIME DESTINATION lib
     PUBLIC_HEADER DESTINATION include/litehtml
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
 install(FILES cmake/litehtmlConfig.cmake DESTINATION lib/cmake/litehtml)
