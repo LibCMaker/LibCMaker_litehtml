@@ -48,7 +48,15 @@ set(COPY_LITEHTML_CMAKE_BUILD_SCRIPTS ON)
 # Library specific vars and options
 #-----------------------------------------------------------------------
 
-option(LITEHTML_UTF8 "Build litehtml with UTF-8 text conversion functions." OFF)
+if(WIN32 OR WINCE)
+  set(_LITEHTML_UTF8 ON)
+else()
+  set(_LITEHTML_UTF8 OFF)
+endif()
+
+option(LITEHTML_UTF8
+  "Build litehtml with UTF-8 text conversion functions." ${_LITEHTML_UTF8}
+)
 
 
 #-----------------------------------------------------------------------

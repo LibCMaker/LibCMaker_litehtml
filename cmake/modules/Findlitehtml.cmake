@@ -36,4 +36,10 @@ if(litehtml_FOUND AND NOT (TARGET litehtml::litehtml))
       INTERFACE_LINK_LIBRARIES gumbo::gumbo
     )
   endif()
+
+  if(WIN32 OR WINCE)
+    set_property(TARGET litehtml::litehtml APPEND PROPERTY
+      INTERFACE_COMPILE_DEFINITIONS LITEHTML_UTF8
+    )
+  endif()
 endif()
